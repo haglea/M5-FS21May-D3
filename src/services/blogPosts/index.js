@@ -4,6 +4,8 @@ import fs from "fs"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 import uniqid from "uniqid"
+import { blogPostsValidationMiddleware } from "./validation.js"
+import { validationResult } from "express-validator"
 
 // To obtain blogPosts.json file path
 const blogPostsJSONPath = join(dirname(fileURLToPath(import.meta.url)), "blogPosts.json")
@@ -41,13 +43,19 @@ blogPostsRouter.get("/:aID", (request, response, next) => {
 })
 
 // POST /blogPosts => create a new blogpost
-blogPostsRouter.post("/", (request, response, next) => {
-    try {       
+blogPostsRouter.post("/", blogPostsValidationMiddleware, (request, response, next) => {
+    try {  
+    const errorsList = validationResult(request)   
+
+    if (!errorsList.isEmpty()) {
+        next(errorsList)
+    } else {
     const newBlogPost = { ...request.body, id: uniqid(), createdAt: new Date()}
     const blogPosts = getblogPosts()
     blogPosts.push(newBlogPost)
     writeblogPosts(blogPosts)
     response.status(201).send({ id: newBlogPost.id })
+    }
     } catch (error) {
         next(error)
   }
