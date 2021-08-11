@@ -1,11 +1,11 @@
-// ----------------------------- authors CRUD ---------------------
+// ----------------------------- blogPosts CRUD ---------------------
 import express from "express"
 import fs from "fs"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 import uniqid from "uniqid"
 
-// To obtain authors.json file path
+// To obtain blogPosts.json file path
 const blogPostsJSONPath = join(dirname(fileURLToPath(import.meta.url)), "blogPosts.json")
 
 const blogPostsRouter = express.Router()
