@@ -30,11 +30,19 @@ response.send(author)
 
 // POST /authors => create a new author
 authorsRouter.post("/", (request, response) => {
-    const newAuthor = { ...request.body, id: uniqid(), createdAt: new Date()}
-    const authors = JSON.parse(fs.readFileSync(authorsJSONPath))
-    authors.push(newAuthor)
-    fs.writeFileSync(authorsJSONPath, JSON.stringify(authors))
-    response.status(201).send({ id: newAuthor.id })
+    const authors = JSON.parse(fs.readFileSync(authorsJSONPath))   
+    const author = authors.find((author) => author.email === request.body.email)    
+    if(!author) { // ! turns undefined(false) into true
+        const newAuthor = { ...request.body, id: uniqid(), createdAt: new Date()} 
+        authors.push(newAuthor)
+        fs.writeFileSync(authorsJSONPath, JSON.stringify(authors))
+        response.status(201).send({ id: newAuthor.id })
+    } else {
+        response.status(400).send("Author with the same email already exists")
+    }    
+    
+    
+    
 })
 
 // PUT /authors/123 => edit the author with the given id
